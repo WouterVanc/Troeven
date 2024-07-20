@@ -9,10 +9,10 @@ class Card:
 
     def __str__(self) -> str:
         court_cards_map: dict[int, str] = {
-            11: "jack",
-            12: "queen",
-            13: "king",
-            14: "ace",
+            11: "Jack",
+            12: "Queen",
+            13: "King",
+            14: "Ace",
         }
         return f"{court_cards_map.get(self.rank, self.rank)} of {self.suit}"
 
@@ -29,6 +29,13 @@ class Deck:
             Card(suit=suit, rank=rank) for suit in suits for rank in ranks
         ]
 
+    def __str__(self) -> str:
+        current_deck: list[str] = [str(card) for card in self.cards]
+        return f"{current_deck}"
+
+    def __repr__(self) -> str:
+        return f"{self.cards}"
+
     def __iter__(self) -> Self:
         self.index = 0
         return self
@@ -40,9 +47,6 @@ class Deck:
             return item
         else:
             raise StopIteration
-
-    def __str__(self) -> str:
-        return f"{self.cards}"
 
     def shuffle(self) -> None:
         random.shuffle(x=self.cards)
@@ -68,12 +72,12 @@ if __name__ == "__main__":
 
     deck.shuffle()
 
-    print(f"shuffled deck = {deck.cards}")
+    print(f"shuffled deck = {deck}")
 
     deck.lift_deck()
 
-    print(f"lifted deck = {deck.cards}")
+    print(f"lifted deck = {deck}")
 
     for card in deck:
 
-        print(card)
+        print(repr(card))
