@@ -7,7 +7,7 @@ class Card:
         self.suit: str = suit
         self.rank: int = rank
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         court_cards_map: dict[int, str] = {
             11: "jack",
             12: "queen",
@@ -15,6 +15,9 @@ class Card:
             14: "ace",
         }
         return f"{court_cards_map.get(self.rank, self.rank)} of {self.suit}"
+
+    def __repr__(self) -> str:
+        return f'({self.rank},"{self.suit}")'
 
 
 class Deck:
