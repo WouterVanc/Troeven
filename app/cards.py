@@ -1,4 +1,5 @@
 import random
+from typing import Self
 
 
 class Card:
@@ -25,11 +26,27 @@ class Deck:
             Card(suit=suit, rank=rank) for suit in suits for rank in ranks
         ]
 
+    def __iter__(self) -> Self:
+        self.index = 0
+        return self
+
+    def __next__(self) -> Card:
+        if self.index < len(self.cards):
+            item: Card = self.cards[self.index]
+            self.index += 1
+            return item
+        else:
+            raise StopIteration
+
     def __str__(self) -> str:
         return f"{self.cards}"
 
     def shuffle(self) -> None:
         random.shuffle(x=self.cards)
+
+    def lift_deck(self) -> None:
+        split_index: int = random.randint(a=0, b=23)
+        self.cards: list[Card] = self.cards[split_index:] + self.cards[:split_index]
 
 
 if __name__ == "__main__":
@@ -48,4 +65,12 @@ if __name__ == "__main__":
 
     deck.shuffle()
 
-    print(f"shuffled deck = {deck}")
+    print(f"shuffled deck = {deck.cards}")
+
+    deck.lift_deck()
+
+    print(f"lifted deck = {deck.cards}")
+
+    for card in deck:
+
+        print(card)
