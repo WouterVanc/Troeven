@@ -3,10 +3,10 @@ from cards import Card
 
 class Player:
 
-    def __init__(self, name: str, cards: list[Card], team: int) -> None:
+    def __init__(self, name: str, cards: list[Card]) -> None:
         self.name: str = name
         self.cards: list[Card] = cards
-        self.team: int = team
+        self.team: int | None = None
 
     def __str__(self) -> str:
         return (
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         Card(suit="Clubs", rank=2),
     ]
 
-    player_one: Player = Player(name="wouter", cards=cards, team=1)
+    player_one: Player = Player(name="wouter", cards=cards)
 
     print(player_one)
 
