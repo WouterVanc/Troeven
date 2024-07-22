@@ -1,5 +1,10 @@
+from __future__ import annotations
+
 import random
-from typing import Self
+from typing import TYPE_CHECKING, Self
+
+if TYPE_CHECKING:
+    from .players import Player
 
 
 class Card:
@@ -56,28 +61,21 @@ class Deck:
         self.cards: list[Card] = self.cards[split_index:] + self.cards[:split_index]
 
 
-if __name__ == "__main__":
+class Pile:
 
-    hand = Card(suit="hearts", rank=12)
+    def __init__(self) -> None:
+        self.current_pile: list[tuple[Player, Card]] = []
+        self.team_one_pile: list[list[Card]] = []
+        self.team_two_pile: list[list[Card]] = []
 
-    print(hand)
+    def __str__(self) -> str:
+        current_pile: list[str] = [str(card) for card in self.current_pile]
+        team_one_pile: list[str] = [str(card) for card in self.team_one_pile]
+        team_two_pile: list[str] = [str(card) for card in self.team_two_pile]
+        return f"The current pile = {current_pile}. Team one has won: {team_one_pile} and team two has won: {team_two_pile}"
 
-    hand = Card(suit="hearts", rank=4)
+    def __repr__(self) -> str:
+        return f"{self.current_pile}, {self.team_one_pile}, {self.team_two_pile}"
 
-    print(hand)
-
-    deck = Deck()
-
-    print(f"Unshuffled deck = {deck}")
-
-    deck.shuffle()
-
-    print(f"shuffled deck = {deck}")
-
-    deck.lift_deck()
-
-    print(f"lifted deck = {deck}")
-
-    for card in deck:
-
-        print(repr(card))
+    def add_to_current_pile(self, player: Player, card: Card) -> None:
+        self.current_pile.append((player, card))

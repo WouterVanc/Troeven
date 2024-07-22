@@ -1,4 +1,9 @@
-from cards import Card
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .cards import Card
 
 
 class Player:
@@ -25,28 +30,3 @@ class Player:
 
     def play_card(self, card_idx: int) -> Card:
         return self.cards.pop(card_idx)
-
-
-if __name__ == "__main__":
-
-    from cards import Deck
-
-    deck: Deck = Deck()
-    deck.shuffle()
-    print(deck)
-    deck.lift_deck()
-    print(deck)
-
-    player_one: Player = Player(name="Wouter")
-
-    print(player_one)
-
-    player_one.receive_cards(card=deck.cards[:4])
-
-    print(player_one)
-
-    played_card: Card = player_one.play_card(card_idx=2)
-
-    print(played_card)
-
-    print(player_one)

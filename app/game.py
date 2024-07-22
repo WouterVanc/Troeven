@@ -1,5 +1,11 @@
+from typing import TYPE_CHECKING
+
 from cards import Deck
 from players import Player
+
+if TYPE_CHECKING:
+    from .cards import Deck
+    from .players import Player
 
 
 class Game:
@@ -19,4 +25,13 @@ class Game:
 
 
 if __name__ == "__main__":
-    pass
+    game = Game(
+        players=[
+            Player(name="bob"),
+            Player(name="josh"),
+            Player(name="allen"),
+            Player(name="rick"),
+        ]
+    )
+
+    game.decide_teams()
