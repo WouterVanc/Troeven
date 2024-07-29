@@ -22,7 +22,14 @@ class Card:
         return f"{court_cards_map.get(self.rank, self.rank)} of {self.suit}"
 
     def __repr__(self) -> str:
-        return f'({self.rank},"{self.suit}")'
+        return f"Card:{self.rank},{self.suit}"
+
+    def __eq__(self, other: Card) -> bool:
+        match other:
+            case Card() as c:
+                return self.suit == other.suit and self.rank == other.rank
+            case _:
+                return False
 
 
 class Deck:
@@ -39,7 +46,7 @@ class Deck:
         return f"{current_deck}"
 
     def __repr__(self) -> str:
-        return f"{self.cards}"
+        return f"Deck:{self.cards}"
 
     def __iter__(self) -> Self:
         self.index = 0
@@ -75,7 +82,11 @@ class Pile:
         return f"The current pile = {current_pile}. Team one has won: {team_one_pile} and team two has won: {team_two_pile}"
 
     def __repr__(self) -> str:
-        return f"{self.current_pile}, {self.team_one_pile}, {self.team_two_pile}"
+        return f"Pile:{self.current_pile}, {self.team_one_pile}, {self.team_two_pile}"
 
     def add_to_current_pile(self, player: Player, card: Card) -> None:
         self.current_pile.append((player, card))
+
+
+if __name__ == "__main__":
+    pass

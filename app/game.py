@@ -17,11 +17,21 @@ class Game:
         deck: Deck = Deck()
         deck.shuffle()
 
+        players_to_deal: list[Player] = self.players
+        team_one: list[Player] = []
         for i_card, card in enumerate(deck):
-            print("##############")
-            print(self.players[i_card % 4].name)
-            print(card)
-            print("##############")
+            if len(team_one) == 2:
+                team_two: list[Player] = players_to_deal
+                break
+
+            if card.rank == 11:
+                current_player: Player = players_to_deal[i_card % len(players_to_deal)]
+                players_to_deal.remove(current_player)
+                team_one.append(current_player)
+
+        print(
+            f"team one = {[x.name for x in team_one]} and team two = {[x.name for x in team_two]}"
+        )
 
 
 if __name__ == "__main__":

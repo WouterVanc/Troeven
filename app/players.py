@@ -19,7 +19,7 @@ class Player:
         )
 
     def __repr__(self) -> str:
-        return f"{self.name},{self.team},{self.cards}"
+        return f"Player:{self.name},{self.team},{self.cards}"
 
     def receive_cards(self, card: Card | list[Card]) -> None:
         match card:
