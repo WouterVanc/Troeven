@@ -1,11 +1,5 @@
-from typing import TYPE_CHECKING
-
 from cards import Deck
 from players import Player
-
-if TYPE_CHECKING:
-    from .cards import Deck
-    from .players import Player
 
 
 class Game:
@@ -17,21 +11,34 @@ class Game:
         deck: Deck = Deck()
         deck.shuffle()
 
-        players_to_deal: list[Player] = self.players
-        team_one: list[Player] = []
-        for i_card, card in enumerate(deck):
-            if len(team_one) == 2:
-                team_two: list[Player] = players_to_deal
+        current_index: int = 0
+        removed_indices: list[int] = []
+        c = 0
+        for card in deck:
+            c += 1
+
+            if len(removed_indices) == 2:
                 break
 
-            if card.rank == 11:
-                current_player: Player = players_to_deal[i_card % len(players_to_deal)]
-                players_to_deal.remove(current_player)
-                team_one.append(current_player)
+            print(f"current card {card}")
+            while current_index in removed_indices:
+                current_index += 1
 
-        print(
-            f"team one = {[x.name for x in team_one]} and team two = {[x.name for x in team_two]}"
-        )
+            print(
+                f"current index = {current_index} so the card has been given to {self.players[current_index].name}"
+            )
+
+            if card.rank == 11:
+                removed_indices.append(current_index)
+
+            if c == 4:
+                print("\n")
+                c = 0
+
+            current_index = (current_index + 1) % 4
+
+        print("finished")
+        print(f"team one = {[self.players[idx].name for idx in removed_indices]}")
 
 
 if __name__ == "__main__":
