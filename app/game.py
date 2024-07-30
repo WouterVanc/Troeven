@@ -1,5 +1,5 @@
 from cards import Deck
-from players import Player
+from players import Player, Team
 
 
 class Game:
@@ -13,32 +13,32 @@ class Game:
 
         current_index: int = 0
         removed_indices: list[int] = []
-        c = 0
         for card in deck:
-            c += 1
-
             if len(removed_indices) == 2:
                 break
 
-            print(f"current card {card}")
             while current_index in removed_indices:
-                current_index += 1
+                current_index = (current_index + 1) % 4
 
             print(
-                f"current index = {current_index} so the card has been given to {self.players[current_index].name}"
+                f"index={current_index} -- {card} -- {self.players[current_index].name.upper()}"
             )
 
             if card.rank == 11:
                 removed_indices.append(current_index)
-
-            if c == 4:
-                print("\n")
-                c = 0
+                print(
+                    f"{self.players[current_index].name.upper()} was given a jack and is now part of team one."
+                )
 
             current_index = (current_index + 1) % 4
 
-        print("finished")
-        print(f"team one = {[self.players[idx].name for idx in removed_indices]}")
+        for idx in range(4):
+            if idx in removed_indices:
+                self.players[idx].team = Team.ONE
+            else:
+                self.players[idx].team = Team.TWO
+
+        print([str(player) for player in self.players])
 
 
 if __name__ == "__main__":
