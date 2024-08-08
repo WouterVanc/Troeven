@@ -6,14 +6,14 @@ class Game:
 
     def __init__(self, players: list[Player]) -> None:
         self.players: list[Player] = players
+        self.deck: Deck = Deck()
+        self.dealer: int = 0
 
     def decide_teams(self) -> None:
-        deck: Deck = Deck()
-        deck.shuffle()
-
+        self.deck.shuffle()
         current_index: int = 0
         removed_indices: list[int] = []
-        for card in deck:
+        for card in self.deck:
             if len(removed_indices) == 2:
                 break
 
@@ -40,8 +40,32 @@ class Game:
 
         print([str(player) for player in self.players])
 
+        self.dealer = removed_indices[0]
+
+    def move_dealer(self) -> None:
+        self.dealer = (self.dealer + 1) % 4
+        print(f"New dealer = {self.players[self.dealer]}")
+
+    def deal_cards(self) -> None:
+        start_index: int = self.dealer
+        players_ordered: list[Player] = (
+            self.players[start_index:] + self.players[:start_index]
+        )
+
+        c = 0
+        while len(self.deck.cards) > 3:
+            for player in players_ordered:
+                c += 1
+                if c > start_index:
+                    print(f"Player: {player.name} was dealt 2 cards.")
+                    player.receive_cards(
+                        card=[self.deck.cards.pop(), self.deck.cards.pop()]
+                    )
+
 
 if __name__ == "__main__":
+
+    # Create players
     game = Game(
         players=[
             Player(name="bob"),
@@ -52,3 +76,5 @@ if __name__ == "__main__":
     )
 
     game.decide_teams()
+    print("\n")
+    game.deal_cards()

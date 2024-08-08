@@ -34,15 +34,17 @@ class Player:
         return f"Player:{self.name},{self.team},{self.cards}"
 
     def receive_cards(self, card: Card | list[Card]) -> None:
+        from cards import Card
+
         match card:
-            case Card():
-                self.cards.append(card)
-            case list():
-                self.cards.extend(card)
+            case Card() as c:
+                self.cards.append(c)
+            case list() as l:
+                self.cards.extend(l)
 
     def play_card(self, card_idx: int) -> Card:
         return self.cards.pop(card_idx)
 
 
 if __name__ == "__main__":
-    print(repr(Team))
+    pass
