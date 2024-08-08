@@ -1,5 +1,3 @@
-# from __future__ import annotations
-
 import random
 from enum import Enum, auto
 from typing import Self
