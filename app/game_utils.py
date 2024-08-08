@@ -1,10 +1,8 @@
-from __future__ import annotations
+# from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Self
-
-if TYPE_CHECKING:
-    from .players import Player
+from enum import Enum, auto
+from typing import Self
 
 
 class Card:
@@ -24,9 +22,9 @@ class Card:
     def __repr__(self) -> str:
         return f"Card:{self.rank},{self.suit}"
 
-    def __eq__(self, other: Card) -> bool:
+    def __eq__(self, other: object) -> bool:
         match other:
-            case Card() as c:
+            case Card():
                 return self.suit == other.suit and self.rank == other.rank
             case _:
                 return False
@@ -60,6 +58,9 @@ class Deck:
         else:
             raise StopIteration
 
+    def __len__(self) -> int:
+        return len(self.cards)
+
     def shuffle(self) -> None:
         random.shuffle(x=self.cards)
 
@@ -84,8 +85,52 @@ class Pile:
     def __repr__(self) -> str:
         return f"Pile:{self.current_pile}, {self.team_one_pile}, {self.team_two_pile}"
 
-    def add_to_current_pile(self, player: Player, card: Card) -> None:
-        self.current_pile.append((player, card))
+    # def add_to_current_pile(self, player: Player, card: Card) -> None:
+    #     self.current_pile.append((player, card))
+
+
+class Team(Enum):
+
+    ONE = auto()
+    TWO = auto()
+
+    def __str__(self) -> str:
+        return self.name.lower()
+
+
+class Player:
+
+    def __init__(self, name: str) -> None:
+        self.name: str = name
+        self.team: Team | None = None
+        self.cards: list[Card] = []
+
+    def __str__(self) -> str:
+        if self.cards == []:
+            current_hand: str | list[str] = "no cards"
+        else:
+            current_hand: str | list[str] = [str(card) for card in self.cards]
+        return f"{self.name} is part of team {str(self.team)} and currently holds {current_hand}."
+
+    def __repr__(self) -> str:
+        return f"Player:{self.name},{self.team},{self.cards}"
+
+    def __eq__(self, other: object) -> bool:
+        match other:
+            case Player():
+                return self.name == other.name and self.team == other.team
+            case _:
+                return False
+
+    def receive_cards(self, card: Card | list[Card]) -> None:
+        match card:
+            case Card() as c:
+                self.cards.append(c)
+            case list() as l:
+                self.cards.extend(l)
+
+    def play_card(self, card_idx: int) -> Card:
+        return self.cards.pop(card_idx)
 
 
 if __name__ == "__main__":

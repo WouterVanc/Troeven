@@ -1,5 +1,6 @@
-from cards import Deck
-from players import Player, Team
+from collections import defaultdict
+
+from game_utils import Deck, Player, Team
 
 
 class Game:
@@ -32,40 +33,56 @@ class Game:
 
             current_index = (current_index + 1) % 4
 
-        for idx in range(4):
-            if idx in removed_indices:
-                self.players[idx].team = Team.ONE
-            else:
-                self.players[idx].team = Team.TWO
+        first_dealer: Player = self.players[removed_indices[0]]
+        teams: defaultdict = defaultdict(list)
+        for player_idx, player in enumerate(self.players):
+            player.team = Team.ONE if player_idx in removed_indices else Team.TWO
+            teams[player.team].append(player)
 
-        print([str(player) for player in self.players])
+        teams[Team.ONE].remove(first_dealer)
+        teams[Team.ONE].insert(0, first_dealer)
 
-        self.dealer = removed_indices[0]
+        self.players: list[Player] = [
+            teams[Team.ONE][0],
+            teams[Team.TWO][0],
+            teams[Team.ONE][1],
+            teams[Team.TWO][1],
+        ]
+
+        print(
+            f"\nThe new order at the table = {[player.name for player in self.players]}"
+        )
 
     def move_dealer(self) -> None:
         self.dealer = (self.dealer + 1) % 4
-        print(f"New dealer = {self.players[self.dealer]}")
+        print(f"New dealer = {self.players[self.dealer].name}")
 
     def deal_cards(self) -> None:
-        start_index: int = self.dealer
-        players_ordered: list[Player] = (
+        print(f"The current dealer = {self.players[self.dealer].name}")
+        start_index: int = self.dealer + 1
+        deal_order: list[Player] = (
             self.players[start_index:] + self.players[:start_index]
         )
 
-        c = 0
-        while len(self.deck.cards) > 3:
-            for player in players_ordered:
-                c += 1
-                if c > start_index:
-                    print(f"Player: {player.name} was dealt 2 cards.")
-                    player.receive_cards(
-                        card=[self.deck.cards.pop(), self.deck.cards.pop()]
-                    )
+        while len(self.deck) > 3:
+            for player in deal_order:
+                if not self.deck.cards:
+                    break
+                print(len(self.deck))
+                print(f"Player: {player.name} was dealt 2 cards.")
+                player.receive_cards(
+                    card=[self.deck.cards.pop(), self.deck.cards.pop()]
+                )
+
+        print(f"final_deck_size = {len(self.deck)}")
+
+        self.move_dealer()
 
 
 if __name__ == "__main__":
 
     # Create players
+    # Imagine this is the order they sit at the table.
     game = Game(
         players=[
             Player(name="bob"),
@@ -75,6 +92,9 @@ if __name__ == "__main__":
         ]
     )
 
+    # 'Boerke leggen' to decide teams.
     game.decide_teams()
     print("\n")
+
+    # Deal cards and flip the dealers card when necessary.
     game.deal_cards()
