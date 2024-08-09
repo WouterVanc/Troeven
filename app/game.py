@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from game_utils import Deck, Player, Team
+from game_utils import Card, Deck, Player, Team
 
 
 class Game:
@@ -8,9 +8,13 @@ class Game:
     def __init__(self, players: list[Player]) -> None:
         self.players: list[Player] = players
         self.deck: Deck = Deck()
-        self.dealer: int = 0
+        self.dealer: Player = Player()
+        self.decide_teams()
 
     def decide_teams(self) -> None:
+        """Method to divide players into teams with 'boerke leggen' and assign the first dealer."""
+        print(" --- BOERKE LEGGEN --- ")
+        print(self.players[0])
         self.deck.shuffle()
         current_index: int = 0
         removed_indices: list[int] = []
@@ -33,14 +37,14 @@ class Game:
 
             current_index = (current_index + 1) % 4
 
-        first_dealer: Player = self.players[removed_indices[0]]
+        self.dealer: Player = self.players[removed_indices[0]]
         teams: defaultdict = defaultdict(list)
         for player_idx, player in enumerate(self.players):
             player.team = Team.ONE if player_idx in removed_indices else Team.TWO
             teams[player.team].append(player)
 
-        teams[Team.ONE].remove(first_dealer)
-        teams[Team.ONE].insert(0, first_dealer)
+        teams[Team.ONE].remove(self.dealer)
+        teams[Team.ONE].insert(0, self.dealer)
 
         self.players: list[Player] = [
             teams[Team.ONE][0],
@@ -54,35 +58,64 @@ class Game:
         )
 
     def move_dealer(self) -> None:
-        self.dealer = (self.dealer + 1) % 4
-        print(f"New dealer = {self.players[self.dealer].name}")
+        dealer_index: int = self.players.index(self.dealer)
+        new_dealer_index: int = (dealer_index + 1) % 4
+        self.dealer: Player = self.players[new_dealer_index]
+        print(f"New dealer = {self.dealer.name}")
 
-    def deal_cards(self) -> None:
-        print(f"The current dealer = {self.players[self.dealer].name}")
-        start_index: int = self.dealer + 1
-        deal_order: list[Player] = (
+    def action_order(self) -> list[Player]:
+        start_index: int = self.players.index(self.dealer) + 1
+        player_order: list[Player] = (
             self.players[start_index:] + self.players[:start_index]
         )
+        return player_order
 
+    def deal_cards(self) -> list[Card]:
+        print(f"The current dealer = {self.dealer.name}\n")
+        deal_order: list[Player] = self.action_order()
+
+        turn: int = 0
         while len(self.deck) > 3:
             for player in deal_order:
                 if not self.deck.cards:
                     break
-                print(len(self.deck))
-                print(f"Player: {player.name} was dealt 2 cards.")
-                player.receive_cards(
-                    card=[self.deck.cards.pop(), self.deck.cards.pop()]
+                turn += 1
+                dealt_cards: list[Card] = [self.deck.cards.pop(), self.deck.cards.pop()]
+                print(
+                    f"Player: {player.name} was dealt {[str(card) for card in dealt_cards]} cards at turn {turn}."
                 )
+                if turn == 8:
+                    troev_pile: list[Card] = dealt_cards
+
+                player.receive_cards(card=dealt_cards)
 
         print(f"final_deck_size = {len(self.deck)}")
 
-        self.move_dealer()
+        print(f"The Troev pile = {[str(card) for card in troev_pile]}\n")
+
+        return troev_pile
+
+    def play_or_pass(self, troev_pile: list[Card]) -> Team:
+        player_order: list[Player] = self.action_order()[:-1] + self.action_order()
+
+        turn: int = 0
+        for player in player_order:
+            turn += 1
+            current_troev: Card = troev_pile[0] if turn < 4 else troev_pile[1]
+            print(f"THE CURRENT TROEV = {current_troev}")
+            print(
+                f"{player.name} is currently holding: {[str(card) for card in player.cards]}"
+            )
+            answer: str = input("Do you want to play?")
+            if answer.lower() == "yes":
+                print(f"{player.team} wants to play with the troev {current_troev}")
+                break
+
+        return player.team
 
 
 if __name__ == "__main__":
 
-    # Create players
-    # Imagine this is the order they sit at the table.
     game = Game(
         players=[
             Player(name="bob"),
@@ -92,9 +125,6 @@ if __name__ == "__main__":
         ]
     )
 
-    # 'Boerke leggen' to decide teams.
-    game.decide_teams()
-    print("\n")
+    troev_pile: list[Card] = game.deal_cards()
 
-    # Deal cards and flip the dealers card when necessary.
-    game.deal_cards()
+    game.play_or_pass(troev_pile=troev_pile)

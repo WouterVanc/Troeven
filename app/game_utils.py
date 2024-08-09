@@ -67,40 +67,21 @@ class Deck:
         self.cards: list[Card] = self.cards[split_index:] + self.cards[:split_index]
 
 
-class Pile:
-
-    def __init__(self) -> None:
-        self.current_pile: list[tuple[Player, Card]] = []
-        self.team_one_pile: list[list[Card]] = []
-        self.team_two_pile: list[list[Card]] = []
-
-    def __str__(self) -> str:
-        current_pile: list[str] = [str(card) for card in self.current_pile]
-        team_one_pile: list[str] = [str(card) for card in self.team_one_pile]
-        team_two_pile: list[str] = [str(card) for card in self.team_two_pile]
-        return f"The current pile = {current_pile}. Team one has won: {team_one_pile} and team two has won: {team_two_pile}"
-
-    def __repr__(self) -> str:
-        return f"Pile:{self.current_pile}, {self.team_one_pile}, {self.team_two_pile}"
-
-    # def add_to_current_pile(self, player: Player, card: Card) -> None:
-    #     self.current_pile.append((player, card))
-
-
 class Team(Enum):
 
     ONE = auto()
     TWO = auto()
+    NOTEAM = auto()
 
     def __str__(self) -> str:
-        return self.name.lower()
+        return self.name
 
 
 class Player:
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str = "default") -> None:
         self.name: str = name
-        self.team: Team | None = None
+        self.team: Team = Team.NOTEAM
         self.cards: list[Card] = []
 
     def __str__(self) -> str:
